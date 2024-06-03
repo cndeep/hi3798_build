@@ -1,0 +1,72 @@
+name: make n2_z81c
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      set_chip_type:
+        description: "Select Chip Type."
+        required: false
+        default: "hi3798mv2dmo"
+        type: choice
+        options:
+          - hi3798mv2dma
+          - hi3798mv2dmb
+          - hi3798mv2dmc
+          - hi3798mv2dme
+          - hi3798mv2dmf
+          - hi3798mv2dmg
+          - hi3798mv2dmo
+      set_arch_type:
+        description: "Select arch type."
+        required: false
+        default: "arm64"
+        type: choice
+        options:
+          - arm
+          - arm64
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Initialization environment
+        id: init
+        run: |
+          sudo -E apt-get -y update
+          sudo -E apt-get -y install gcc make gettext bison flex bc zlib1g-dev libncurses5-dev lzma git
+          sudo mkdir -p /builder
+          sudo chown -R runner.runner /builder
+          echo "status=success" >> ${GITHUB_OUTPUT}
+          
+      - name: make build
+        id: build
+        working-directory: /builder
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone -q https://github.com/zjkanjie/HiSTBLinuxV100R005C00SPC060 mv200
+          git clone -q https://github.com/cndeep/hi3798_build
+          cp hi3798_build/config_files/z81c.mak ./cfg.mak
+          cp hi3798_build/config_files/mv200.config mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
+          cp hi3798_build/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200
+          cd mv200
+          source ./env.sh
+          make hiboot
+          make linux -j4 2>&1  | tee -a buildlog.txt
+          cp /builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/fastboot.bin /builder/fastboot_${{ inputs.set_chip_type }}.bin
+          echo "status=success" >> ${GITHUB_OUTPUT}
+          
+      - name: Upload Kernel to Release
+        id: tar
+        uses: ncipollo/release-action@main
+        if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: mv200_kernel
+          artifacts: /builder/fastboot_${{ inputs.set_chip_type }}.bin,/builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/hi_kernel.bin
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - 海思3798Mv200内核，调试阶段。
