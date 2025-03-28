@@ -22,7 +22,7 @@ on:
           - arm64
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -32,7 +32,7 @@ jobs:
         id: init
         run: |
           sudo -E apt-get -y update
-          sudo -E apt-get -y install gcc make gettext zlib1g-dev libncurses5-dev bison flex bc texinfo tree cmake flex
+          sudo -E apt-get -y install gcc make gettext zlib1g-dev libncurses5-dev bison flex bc texinfo tree cmake flex lzma git
           sudo mkdir -p /builder
           sudo chown -R runner.runner /builder
           echo "status=success" >> ${GITHUB_OUTPUT}
