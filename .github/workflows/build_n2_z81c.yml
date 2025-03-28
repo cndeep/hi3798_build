@@ -61,7 +61,8 @@ jobs:
           
       - name: Upload Kernel to Release
         id: tar
-        uses: ncipollo/release-action@main
+        uses: actions/checkout@v4
+        uses: ncipollo/release-action@v1
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
         with:
           tag: mv200_kernel
