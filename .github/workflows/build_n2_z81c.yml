@@ -63,10 +63,10 @@ jobs:
         id: tar
         uses: ncipollo/release-action@v1
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
-         with:
-           tag: mv200_kernel
-           artifacts: /builder/fastboot_${{ inputs.set_chip_type }}.bin,/builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/hi_kernel.bin
-           allowUpdates: true
-           token: ${{ secrets.GITHUB_TOKEN }}
-           body: |
-             - 海思3798Mv200内核，调试阶段。
+        with:
+          tag: mv200_kernel
+          artifacts: /builder/fastboot_${{ inputs.set_chip_type }}.bin,/builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/hi_kernel.bin
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - 海思3798Mv200内核，调试阶段。
