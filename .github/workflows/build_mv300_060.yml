@@ -12,6 +12,10 @@ on:
         options:
           - hi3798mv3dmf
           - hi3798mv300dmw
+          - hi3798mv3dms1
+          - hi3798mv3dmm
+          - hi3798mv3dml
+          - hi3798mv3dma
       set_arch_type:
         description: "Select arch type."
         required: false
