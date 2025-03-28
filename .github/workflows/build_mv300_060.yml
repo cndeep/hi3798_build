@@ -10,7 +10,7 @@ on:
         default: "hi3798mv300dmw"
         type: choice
         options:
-          - hi3798mv2dma
+          - hi3798mv3dmf
           - hi3798mv300dmw
       set_arch_type:
         description: "Select arch type."
@@ -44,6 +44,7 @@ jobs:
         run: |
           git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv300
           cd mv300
+          cp ${GITHUB_WORKSPACE}/config_files/${{ inputs.set_chip_type }}_hi3798mv300_cfg.mak ./cfg.mak
           source ./env.sh
           make hiboot
           cp /builder/mv300/out/hi3798mv300/${{ inputs.set_chip_type }}/image/emmc_image/fastboot.bin /builder/fastboot_${{ inputs.set_chip_type }}.bin
