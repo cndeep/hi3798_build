@@ -47,7 +47,7 @@ jobs:
           source ./env.sh
           make hiboot
           cp /builder/mv300/out/hi3798mv300/${{ inputs.set_chip_type }}/image/emmc_image/fastboot.bin /builder/fastboot_${{ inputs.set_chip_type }}.bin
-          make linux -j2 2>&1  | tee -a buildlog.txt
+          #make linux -j2 2>&1  | tee -a buildlog.txt
           echo "status=success" >> ${GITHUB_OUTPUT}
           
       - name: Upload Kernel to Release
