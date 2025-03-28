@@ -7,11 +7,11 @@ on:
       set_chip_type:
         description: "Select Chip Type."
         required: false
-        default: "hi3798mv300dmw"
+        default: "hi3798mv3dmw"
         type: choice
         options:
           - hi3798mv3dmf
-          - hi3798mv300dmw
+          - hi3798mv3dmw
       set_arch_type:
         description: "Select arch type."
         required: false
