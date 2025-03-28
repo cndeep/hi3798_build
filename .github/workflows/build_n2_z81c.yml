@@ -47,8 +47,8 @@ jobs:
         working-directory: /builder
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
-          git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv200
-          #git clone -q https://github.com/cndeep/hi3798_build
+          #git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv200
+          git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
           cp ${GITHUB_WORKSPACE}/config_files/z81c.mak ./cfg.mak
           cp ${GITHUB_WORKSPACE}/config_files/mv200_z81c.config mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200
