@@ -1,4 +1,4 @@
-name: make n2_z81c
+name: make n2_z81c 050
 
 on:
   repository_dispatch:
