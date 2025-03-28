@@ -11,7 +11,7 @@ on:
         type: choice
         options:
           - hi3798mv3dmf
-          - hi3798mv300dmw
+          - hi3798mv3dmw
           - hi3798mv3dms1
           - hi3798mv3dmm
           - hi3798mv3dml
@@ -47,7 +47,7 @@ jobs:
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
           git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv300
-          cp ${GITHUB_WORKSPACE}/config_files/${{ inputs.set_chip_type }}_hi3798mv300_cfg.mak ./cfg.mak
+          cp ${GITHUB_WORKSPACE}/config_files/${{ inputs.set_chip_type }}_hi3798mv300_cfg.mak mv300/cfg.mak
           cd mv300
           source ./env.sh
           make hiboot
