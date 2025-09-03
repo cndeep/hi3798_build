@@ -60,71 +60,71 @@ jobs:
           rm -rf /mnt/linux-headers*.deb
           rm -rf /mnt/linux-image*.deb
           cat>/etc/apt/sources.list<<EOF
-deb http://mirrors.ustc.edu.cn/debian/ bullseye main non-free contrib
-deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
-deb http://mirrors.ustc.edu.cn/debian-security/ bullseye-security main
-EOF
-		  apt install locales usbutils curl wget fdisk net-tools nano
-		  dpkg-reconfigure locales
-		  dpkg-reconfigure tzdata
-		  sed -i '/PermitRootLogin /c PermitRootLogin yes' /etc/ssh/sshd_config
-		  sed -i '/PasswordAuthentication /c PasswordAuthentication yes' /etc/ssh/sshd_config
-		  echo "root:123456" | chpasswd
-		  cat>>/etc/systemd/system/rc-local.service<<EOF
-[Unit]
-Description=/etc/rc.local
-ConditionPathExists=/etc/rc.local
-
-[Service]
-Type=forking
-ExecStart=/etc/rc.local start
-TimeoutSec=0
-StandardOutput=tty
-RemainAfterExit=yes
-SysVStartPriority=99
-
-[Install]
-WantedBy=multi-user.target
-EOF
-		  cat <<EOF >/etc/rc.local
-#!/bin/sh -e
-#
-# rc.local
-#
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-
-exit 0
-EOF
-		  systemctl daemon-reload && systemctl enable rc-local
-		  history -c
-		  exit
-		  cp /mnt/boot/initrd**.img /back
-		  sudo umount /mnt/proc 
-		  sudo umount /mnt/dev/pts
-		  sudo umount /mnt/dev
-		  sudo umount /mnt/sys
-		  sudo umount /mnt
-		  img2simg root.img rootfs.img
-		  cd /back
-		  cat Image.gz msm8916-handsome-openstick-ufi001c.dtb > ufi001c-kernel-dtb
-		  mv initrd.img-5.15.0-handsomekernel+ initrd.img
-		  mkbootimg \
---base 0x80000000 \
---kernel_offset 0x00080000 \
---ramdisk_offset 0x02000000 \
---tags_offset 0x01e00000 \
---pagesize 2048 \
---second_offset 0x00f00000 \
---ramdisk initrd.img \
---cmdline "earlycon root=PARTUUID=a7ab80e8-e9d1-e8cd-f157-93f69b1d141e console=ttyMSM0,115200 no_framebuffer=true rw" \
---kernel ufi001c-kernel-dtb \
--o ufi001c-boot.img
-		  cd /builder
-		  tar zcvf all.tar.gz /back/*
-		  echo "status=success" >> ${GITHUB_OUTPUT}
+          deb http://mirrors.ustc.edu.cn/debian/ bullseye main non-free contrib
+          deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
+          deb http://mirrors.ustc.edu.cn/debian-security/ bullseye-security main
+          EOF
+          apt install locales usbutils curl wget fdisk net-tools nano
+          dpkg-reconfigure locales
+          dpkg-reconfigure tzdata
+          sed -i '/PermitRootLogin /c PermitRootLogin yes' /etc/ssh/sshd_config
+          sed -i '/PasswordAuthentication /c PasswordAuthentication yes' /etc/ssh/sshd_config
+          echo "root:123456" | chpasswd
+          cat>>/etc/systemd/system/rc-local.service<<EOF
+          [Unit]
+          Description=/etc/rc.local
+          ConditionPathExists=/etc/rc.local
+          
+          [Service]
+          Type=forking
+          ExecStart=/etc/rc.local start
+          TimeoutSec=0
+          StandardOutput=tty
+          RemainAfterExit=yes
+          SysVStartPriority=99
+          
+          [Install]
+          WantedBy=multi-user.target
+          EOF
+          cat <<EOF >/etc/rc.local
+          #!/bin/sh -e
+          #
+          # rc.local
+          #
+          # This script is executed at the end of each multiuser runlevel.
+          # Make sure that the script will "exit 0" on success or any other
+          # value on error.
+          #
+          
+          exit 0
+          EOF
+          systemctl daemon-reload && systemctl enable rc-local
+          history -c
+          exit
+          cp /mnt/boot/initrd**.img /back
+          sudo umount /mnt/proc 
+          sudo umount /mnt/dev/pts
+          sudo umount /mnt/dev
+          sudo umount /mnt/sys
+          sudo umount /mnt
+          img2simg root.img rootfs.img
+          cd /back
+          cat Image.gz msm8916-handsome-openstick-ufi001c.dtb > ufi001c-kernel-dtb
+          mv initrd.img-5.15.0-handsomekernel+ initrd.img
+          mkbootimg \
+          --base 0x80000000 \
+          --kernel_offset 0x00080000 \
+          --ramdisk_offset 0x02000000 \
+          --tags_offset 0x01e00000 \
+          --pagesize 2048 \
+          --second_offset 0x00f00000 \
+          --ramdisk initrd.img \
+          --cmdline "earlycon root=PARTUUID=a7ab80e8-e9d1-e8cd-f157-93f69b1d141e console=ttyMSM0,115200 no_framebuffer=true rw" \
+          --kernel ufi001c-kernel-dtb \
+          -o ufi001c-boot.img
+          cd /builder
+          tar zcvf all.tar.gz /back/*
+          echo "status=success" >> ${GITHUB_OUTPUT}
           
       - name: Upload Kernel to Release
         id: tar
