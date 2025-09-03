@@ -14,7 +14,7 @@ jobs:
         id: init
         run: |
           sudo -E apt-get -y update
-          sudo -E apt-get -y install gcc make gettext bison flex bc zlib1g-dev libncurses5-dev lzma libssl-dev gcc-arm-linux-gnueabi git gcc-arm-linux-gnueabihf
+          sudo -E apt-get -y install gcc make gettext bison flex bc zlib1g-dev libncurses5-dev lzma libssl-dev gcc-arm-linux-gnueabi git gcc-arm-linux-gnueabihf u-boot-tools
           sudo mkdir -p /builder
           sudo chown -R runner.runner /builder
           echo "status=success" >> ${GITHUB_OUTPUT}
