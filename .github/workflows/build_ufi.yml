@@ -14,7 +14,7 @@ jobs:
         id: init
         run: |
           sudo -E apt-get -y update
-          sudo -E apt-get -y install binfmt-support qemu-user-static gcc-10-aarch64-linux-gnu kernel-package fakeroot simg2img img2simg mkbootimg bison flex gcc-aarch64-linux-gnu pkg-config libncurses-dev libssl-dev unzip git
+          sudo -E apt-get -y install binfmt-support qemu-user-static gcc-10-aarch64-linux-gnu fakeroot simg2img img2simg mkbootimg bison flex gcc-aarch64-linux-gnu pkg-config libncurses-dev libssl-dev unzip git
           sudo mkdir -p /builder
           sudo mkdir -p /back
           sudo chown -R runner.runner /builder
