@@ -26,13 +26,13 @@ jobs:
         run: |
           git clone -q --single-branch --depth=1 https://github.com/loonpn/ec6108v9c-linux-kernel mv100
           cd mv100
-		  make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- hi3798mv100_defconfig
+          make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- hi3798mv100_defconfig
           make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
           cat arch/arm/boot/Image arch/arm/boot/dts/hi3798mv100-ec6108v9c.dtb > zImage-dtb
           mkimage -A arm -O linux -T kernel -C none -a 0X2000000 -e 0X2000000 -n linux -d zImage-dtb uImage
-		  make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_STRIP=1 INSTALL_MOD_PATH=kernel_modules modules_install
-		  make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_HDR_PATH=kernel_headers headers_install
-		  tar zcvf linux-build.tar.gz kernel_headers kernel_modules
+          make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_MOD_STRIP=1 INSTALL_MOD_PATH=kernel_modules modules_install
+          make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- INSTALL_HDR_PATH=kernel_headers headers_install
+          tar zcvf linux-build.tar.gz kernel_headers kernel_modules
           echo "status=success" >> ${GITHUB_OUTPUT}
           
       - name: Upload Kernel to Release
