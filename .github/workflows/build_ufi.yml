@@ -1,0 +1,139 @@
+name: make ufi
+on:
+  repository_dispatch:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Initialization environment
+        id: init
+        run: |
+          sudo -E apt-get -y update
+          sudo -E apt-get -y install binfmt-support qemu-user-static gcc-10-aarch64-linux-gnu kernel-package fakeroot simg2img img2simg mkbootimg bison flex gcc-aarch64-linux-gnu pkg-config libncurses-dev libssl-dev unzip git
+          sudo mkdir -p /builder
+		  sudo mkdir -p /back
+          sudo chown -R runner.runner /builder
+		  sudo chown -R runner.runner /back
+          echo "status=success" >> ${GITHUB_OUTPUT}
+          
+      - name: make build
+        id: build
+        working-directory: /builder
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone -q --single-branch --depth=1 https://github.com/OpenStick/linux.git ufi
+          cd ufi
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export ARCH=arm64
+          make msm8916_defconfig
+          make -j$(nproc)
+          fakeroot make-kpkg  --initrd --cross-compile aarch64-linux-gnu- --arch arm64  kernel_image kernel_headers
+		  tar zcvf linux-headers_image.tar.gz ../linux-headers*.deb ../linux-image*.deb
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: make rootfs
+        id: rootfs
+        working-directory: /builder
+        if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        run: |
+          cp ufi/arch/arm64/boot/Image.gz /back/
+		  cp ufi/arch/arm64/boot/dts/qcom/*.dtb /back/
+          wget https://github.com/OpenStick/OpenStick/releases/download/v1/debian.zip && unzip debian.zip
+          cp deian/rootfs.img /back
+		  cd /back
+          simg2img rootfs.img root.img
+          sudo mount root.img /mnt
+          sudo  mount --bind /proc /mnt/proc 
+		  sudo  mount --bind /dev /mnt/dev
+		  sudo  mount --bind /dev/pts /mnt/dev/pts
+		  sudo  mount --bind /sys /mnt/sys
+		  cp /builder/linux-headers*.deb /mnt
+		  cp /builder/linux-image*.deb /mnt
+		  sudo  chroot /mnt
+		  dpkg -l | grep -E "linux-headers|linux-image" |awk '{print $2}'|xargs dpkg -P
+		  dpkg -i *.deb
+		  rm -rf /mnt/linux-headers*.deb
+		  rm -rf /mnt/linux-image*.deb
+		  cat>/etc/apt/sources.list<<EOF
+deb http://mirrors.ustc.edu.cn/debian/ bullseye main non-free contrib
+deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
+deb http://mirrors.ustc.edu.cn/debian-security/ bullseye-security main
+EOF
+		  apt install locales usbutils curl wget fdisk net-tools nano
+		  dpkg-reconfigure locales
+		  dpkg-reconfigure tzdata
+		  sed -i '/PermitRootLogin /c PermitRootLogin yes' /etc/ssh/sshd_config
+		  sed -i '/PasswordAuthentication /c PasswordAuthentication yes' /etc/ssh/sshd_config
+		  echo "root:123456" | chpasswd
+		  cat>>/etc/systemd/system/rc-local.service<<EOF
+[Unit]
+Description=/etc/rc.local
+ConditionPathExists=/etc/rc.local
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+EOF
+		  cat <<EOF >/etc/rc.local
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+
+exit 0
+EOF
+		  systemctl daemon-reload && systemctl enable rc-local
+		  history -c
+		  exit
+		  cp /mnt/boot/initrd**.img /back
+		  sudo umount /mnt/proc 
+		  sudo umount /mnt/dev/pts
+		  sudo umount /mnt/dev
+		  sudo umount /mnt/sys
+		  sudo umount /mnt
+		  img2simg root.img rootfs.img
+		  cd /back
+		  cat Image.gz msm8916-handsome-openstick-ufi001c.dtb > ufi001c-kernel-dtb
+		  mv initrd.img-5.15.0-handsomekernel+ initrd.img
+		  mkbootimg \
+--base 0x80000000 \
+--kernel_offset 0x00080000 \
+--ramdisk_offset 0x02000000 \
+--tags_offset 0x01e00000 \
+--pagesize 2048 \
+--second_offset 0x00f00000 \
+--ramdisk initrd.img \
+--cmdline "earlycon root=PARTUUID=a7ab80e8-e9d1-e8cd-f157-93f69b1d141e console=ttyMSM0,115200 no_framebuffer=true rw" \
+--kernel ufi001c-kernel-dtb \
+-o ufi001c-boot.img
+		  cd /builder
+		  tar zcvf all.tar.gz /back/*
+		  echo "status=success" >> ${GITHUB_OUTPUT}
+          
+      - name: Upload Kernel to Release
+        id: tar
+        uses: ncipollo/release-action@v1
+        if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: ufi_debian
+          artifacts: /builder/linux-headers_image.tar.gz,/builder/all.tar.gz
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - ufi,debian
