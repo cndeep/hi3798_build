@@ -31,7 +31,7 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
           ls -R /builder/mv310/out
           cp /builder/mv310/out/hi3798mv310/hi3798mv31dmd/image/emmc_image/fastboot.bin /builder/fastboot_hi3798mv31dmd.bin
-          #tar -cvf hi3798mv310_kernel.tar /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/*
+          tar -cvf hi3798mv310_kmod.tar /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
       - name: Upload Kernel to Release
         id: tar
@@ -39,8 +39,8 @@ jobs:
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
         with:
           tag: mv310_kernel
-          #artifacts: /builder/hi3798mv310_image.tar,/builder/hi3798mv310_kernel.tar
-          artifacts: /builder/fastboot_hi3798mv31dmd.bin,/builder/mv310/out/hi3798mv310/hi3798mv31dmd/image/emmc_image/hi_kernel.bin
+          #artifacts: /builder/hi3798mv310_image.tar,/builder/hi3798mv310_kmod.tar
+          artifacts: /builder/fastboot_hi3798mv31dmd.bin,/builder/mv310/out/hi3798mv310/hi3798mv31dmd/image/emmc_image/hi_kernel.bin,/builder/hi3798mv310_kmod.tar
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
