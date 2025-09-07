@@ -27,11 +27,11 @@ jobs:
           cp configs/hi3798mv310/hi3798mv31dmd_hi3798mv310_cfg.mak ./cfg.mak
           source ./env.sh
           make hiboot
-          ls -R /builder/mv310/out
+          #ls -R /builder/mv310/out
           make linux -j4 2>&1  | tee -a buildlog.txt
           ls -R /builder/mv310/out
           cp /builder/mv310/out/hi3798mv310/hi3798mv31dmd/image/emmc_image/fastboot.bin /builder/fastboot_hi3798mv31dmd.bin
-          tar -cvf hi3798mv310_kmod.tar /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
+          tar -cvf /builder/hi3798mv310_kmod.tar /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
       - name: Upload Kernel to Release
         id: tar
