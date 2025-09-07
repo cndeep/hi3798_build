@@ -34,10 +34,11 @@ jobs:
           #tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
           mkdir /builder/kmod
           cd /builder/mv310/out/hi3798mv310/hi3798mv31dmd/obj/source/kernel/linux-4.4.y
+          ls -R
           cp modules.order 123.txt
           cat modules.order
           #cp --parent $(cat 123.txt) /builder/kmod
-          tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/kmod/*
+          #tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
       - name: Upload Kernel to Release
         id: tar
