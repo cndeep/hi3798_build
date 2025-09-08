@@ -57,7 +57,7 @@ jobs:
           make linux -j$(nproc) 2>&1  | tee -a buildlog.txt
           cp /builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/fastboot.bin /builder/fastboot_${{ inputs.set_chip_type }}.bin
           mkdir /builder/kmod
-          cd /builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/obj/source/kernel/linux-4.4.y
+          cd /builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/obj64/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
           cat 123.txt
