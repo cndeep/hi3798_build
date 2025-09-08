@@ -54,8 +54,15 @@ jobs:
           cd mv200
           source ./env.sh
           make hiboot
-          make linux -j4 2>&1  | tee -a buildlog.txt
+          make linux -j$(nproc) 2>&1  | tee -a buildlog.txt
           cp /builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/fastboot.bin /builder/fastboot_${{ inputs.set_chip_type }}.bin
+          mkdir /builder/kmod
+          cd /builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/obj/source/kernel/linux-4.4.y
+          cp modules.order 123.txt
+          sed -i "s/kernel\///" 123.txt
+          cat 123.txt
+          cp --parents $(cat 123.txt) /builder/kmod/
+          tar -zcvf /builder/hi3798mv200_kmod.tar.gz /builder/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
           
       - name: Upload Kernel to Release
@@ -64,7 +71,7 @@ jobs:
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
         with:
           tag: mv200_kernel_050
-          artifacts: /builder/fastboot_${{ inputs.set_chip_type }}.bin,/builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/hi_kernel.bin
+          artifacts: /builder/fastboot_${{ inputs.set_chip_type }}.bin,/builder/mv200/out/hi3798mv200/${{ inputs.set_chip_type }}/image/emmc_image/hi_kernel.bin,/builder/hi3798mv200_kmod.tar.gz
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
