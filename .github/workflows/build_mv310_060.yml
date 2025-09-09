@@ -26,11 +26,11 @@ jobs:
           cd mv310
           cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
           source ./env.sh
-          make hiboot
+          #make hiboot
           #ls -R /builder/mv310/out
           make linux -j4 2>&1  | tee -a buildlog.txt
           #ls -R /builder/mv310/out
-          cp /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/fastboot.bin /builder/fastboot_hi3798mv31dmg.bin
+          #cp /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/fastboot.bin /builder/fastboot_hi3798mv31dmg.bin
           #tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
           mkdir /builder/kmod
           cd /builder/mv310/out/hi3798mv310/hi3798mv31dmg/obj/source/kernel/linux-4.4.y
@@ -47,7 +47,7 @@ jobs:
         with:
           tag: mv310_kernel
           #artifacts: /builder/hi3798mv310_image.tar,/builder/hi3798mv310_kmod.tar.gz
-          artifacts: /builder/fastboot_hi3798mv31dmg.bin,/builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/hi_kernel.bin,/builder/hi3798mv310_kmod.tar.gz
+          artifacts: /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/hi_kernel.bin,/builder/hi3798mv310_kmod.tar.gz
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
