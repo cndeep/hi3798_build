@@ -1,0 +1,54 @@
+name: make mv310 kernel
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Initialization environment
+        id: init
+        run: |
+          sudo -E apt-get -y update
+          sudo -E apt-get -y install gcc make gettext bison flex bc zlib1g-dev libncurses5-dev lzma git
+          sudo mkdir -p /builder
+          sudo chown -R runner.runner /builder
+          echo "status=success" >> ${GITHUB_OUTPUT}
+      - name: make build
+        id: build
+        working-directory: /builder
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone --depth=1 https://github.com/jasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv310
+          cd mv310
+          cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
+          source ./env.sh
+          make hiboot
+          #ls -R /builder/mv310/out
+          make linux -j4 2>&1  | tee -a buildlog.txt
+          #ls -R /builder/mv310/out
+          cp /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/fastboot.bin /builder/fastboot_hi3798mv31dmg.bin
+          #tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
+          mkdir /builder/kmod
+          cd /builder/mv310/out/hi3798mv310/hi3798mv31dmg/obj/source/kernel/linux-4.4.y
+          cp modules.order 123.txt
+          sed -i "s/kernel\///" 123.txt
+          cat 123.txt
+          cp --parents $(cat 123.txt) /builder/kmod/
+          tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/kmod/*
+          echo "status=success" >> ${GITHUB_OUTPUT}
+      - name: Upload Kernel to Release
+        id: tar
+        uses: ncipollo/release-action@main
+        if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: mv310_kernel
+          #artifacts: /builder/hi3798mv310_image.tar,/builder/hi3798mv310_kmod.tar.gz
+          artifacts: /builder/fastboot_hi3798mv31dmg.bin,/builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/hi_kernel.bin,/builder/hi3798mv310_kmod.tar.gz
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - 海思3798Mv310内核，32位。
