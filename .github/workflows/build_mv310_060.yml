@@ -26,7 +26,8 @@ jobs:
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
           git clone --depth=1 https://github.com/jasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv310
-          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv310_defconfig mv310/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv310_defconfig          cd mv310
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv310_defconfig mv310/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv310_defconfig
+          cd mv310
           cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
           source ./env.sh
           #make hiboot
