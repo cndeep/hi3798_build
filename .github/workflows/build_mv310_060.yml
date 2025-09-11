@@ -29,6 +29,7 @@ jobs:
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv310_defconfig mv310/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv310_defconfig
           cd mv310
           cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
+          sed -i "s/'CFG_HI_TOOL_MSP_DEBUG_SUPPORT=y'/'# CFG_HI_TOOL_MSP_DEBUG_SUPPORT is not set'/" ./cfg.mak
           source ./env.sh
           #make hiboot
           #ls -R /builder/mv310/out
