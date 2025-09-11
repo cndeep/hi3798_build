@@ -30,6 +30,7 @@ jobs:
           cd mv310
           cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
           sed -i "s/'CFG_HI_TOOL_MSP_DEBUG_SUPPORT=y'/'# CFG_HI_TOOL_MSP_DEBUG_SUPPORT is not set'/" ./cfg.mak
+          echo "CFG_HI_OTP_KLAD_V200=y" >> ./cfg.mak
           source ./env.sh
           #make hiboot
           #ls -R /builder/mv310/out
