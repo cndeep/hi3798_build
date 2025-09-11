@@ -1,4 +1,4 @@
-name: make mv310 kernel
+name: make mv310 060
 
 on:
   repository_dispatch:
