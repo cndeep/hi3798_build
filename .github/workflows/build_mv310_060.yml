@@ -23,6 +23,7 @@ jobs:
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
           git clone --depth=1 https://github.com/jasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv310
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv310_defconfig mv310/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv310_defconfig
           cd mv310
           cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
           source ./env.sh
@@ -31,14 +32,14 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
           #ls -R /builder/mv310/out
           #cp /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/fastboot.bin /builder/fastboot_hi3798mv31dmg.bin
-          #tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/mv310/out/hi3798mv310/hi3798mv31dmd/kmod/*
+          cp /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/hi_kernel.bin /builder/hi_kernel_060.bin
           mkdir /builder/kmod
           cd /builder/mv310/out/hi3798mv310/hi3798mv31dmg/obj/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
           cat 123.txt
           cp --parents $(cat 123.txt) /builder/kmod/
-          tar -zcvf /builder/hi3798mv310_kmod.tar.gz /builder/kmod/*
+          tar -zcvf /builder/hi3798mv310_kmod_060.tar.gz /builder/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
       - name: Upload Kernel to Release
         id: tar
@@ -46,8 +47,7 @@ jobs:
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
         with:
           tag: mv310_kernel
-          #artifacts: /builder/hi3798mv310_image.tar,/builder/hi3798mv310_kmod.tar.gz
-          artifacts: /builder/mv310/out/hi3798mv310/hi3798mv31dmg/image/emmc_image/hi_kernel.bin,/builder/hi3798mv310_kmod.tar.gz
+          artifacts: /builder/hi_kernel_060.bin,/builder/hi3798mv310_kmod_060.tar.gz
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
