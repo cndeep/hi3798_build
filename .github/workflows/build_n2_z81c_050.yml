@@ -53,7 +53,7 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
           mkdir /builder/kmod
           mkdir /builder/out
-          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/fastboot.bin /builder/out/fastboot_z81c.bin
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/fastboot.bin /builder/out/fastboot-z81c.bin
           cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-z81c.bin
           cd /builder/mv200/out/hi3798mv200/hi3798mv2dmf/obj64/source/kernel/linux-4.4.y
           cp modules.order 123.txt
@@ -67,8 +67,8 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: mv200_kernel
-          artifacts: /builder/out
+          tag: mv200_kernel_050
+          artifacts: /builder/out/fastboot-z81c.bin,/builder/out/hi_kernel-z81c.bin,/builder/out/z81c_kmod.tar.gz
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
@@ -114,8 +114,8 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
           mkdir /builder/kmod
           mkdir /builder/out
-          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/fastboot.bin /builder/out/fastboot_n2.bin
-          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel_n2.bin
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/fastboot.bin /builder/out/fastboot-n2.bin
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-n2.bin
           cd /builder/mv200/out/hi3798mv200/hi3798mv2dmc/obj64/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
@@ -128,8 +128,8 @@ jobs:
         uses: ncipollo/release-action@main
         if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
         with:
-          tag: mv200_kernel
-          artifacts: /builder/out
+          tag: mv200_kernel_050
+          artifacts: /builder/out/fastboot-n2.bin,/builder/out/hi_kernel-n2.bin,/builder/out/n2_kmod.tar.gz
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
