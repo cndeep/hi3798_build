@@ -132,4 +132,3 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             - 海思3798mv200内核，适用于N2。
-
