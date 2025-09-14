@@ -1,6 +1,7 @@
 name: make n2_z81c 050
 
 on:
+  repository_dispatch:
   workflow_dispatch:
     inputs:
       arch:
