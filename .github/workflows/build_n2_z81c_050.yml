@@ -7,13 +7,13 @@ on:
         description: 'Select box type'
         type: choice
         required: true
-        default: 'z81c'
+        default: 'z81c_box'
         options:
-          - z81c
-          - n2
+          - z81c_box
+          - n2_box
 jobs:
   build-z81c:
-    if: ${{inputs.arch == z81c}}
+    if: ${{inputs.arch == z81c_box}}
     runs-on: ubuntu-22.04
     name: 编译z81c
     steps:
@@ -74,7 +74,7 @@ jobs:
             - 海思3798mv200内核，适用于Z81c。
 
   build-n2:
-    if: ${{inputs.arch == n2}}
+    if: ${{inputs.arch == n2_box}}
     name: 编译N2
     runs-on: ubuntu-22.04
     steps:
