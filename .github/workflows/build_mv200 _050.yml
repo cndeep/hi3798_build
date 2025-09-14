@@ -10,7 +10,7 @@ on:
         required: true
         default: 'arm64'
         options:
-          - arm
+          - arm32
           - arm64
       chip:
         description: 'Select Chip Type'
@@ -27,7 +27,7 @@ on:
           - hi3798mv2dmo
 jobs:
   build-arm:
-    if: ${{inputs.arch == arm}}
+    if: ${{inputs.arch == arm32}}
     runs-on: ubuntu-22.04
     name: 编译(32位)
     steps:
