@@ -1,6 +1,7 @@
 name: build_mv200 050
 
 on:
+  repository_dispatch:
   workflow_dispatch:
     inputs:
       arch:
