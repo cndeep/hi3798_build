@@ -1,0 +1,145 @@
+name: build_mv200 050
+
+on:
+  workflow_dispatch:
+    inputs:
+      arch:
+        description: 'Select arch type'
+        type: choice
+        required: true
+        default: 'arm64'
+        options:
+          - arm
+          - arm64
+      chip:
+        description: 'Select Chip Type'
+        type: choice
+        required: true
+        default: "hi3798mv2dmf"
+        options:
+          - hi3798mv2dma
+          - hi3798mv2dmb
+          - hi3798mv2dmc
+          - hi3798mv2dme
+          - hi3798mv2dmf
+          - hi3798mv2dmg
+          - hi3798mv2dmo
+		  
+jobs:
+  build-arm:
+    if: ${{inputs.arch == arm}}
+    runs-on: ubuntu-22.04
+    name: 编译(32位)
+    steps:
+      - name: 安装编译依赖和环境
+        id: init
+        run: |
+          sudo -E apt-get -y update
+          sudo -E apt-get -y install gcc make gettext bison flex bc zlib1g-dev libncurses5-dev lzma git
+          sudo mkdir -p /builder
+          sudo chown -R runner.runner /builder
+          echo "status=success" >> ${GITHUB_OUTPUT}
+		  
+      - name: 克隆sdk
+        uses: actions/checkout@v4
+        id: clone
+		working-directory: /builder
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
+          cd mv200
+          cp configs/hi3798mv200/${{inputs.chip}}_hi3798mv200_cfg.mak ./cfg.mak
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig mv200/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv200_defconfig
+		  echo "status=success" >> ${GITHUB_OUTPUT}
+	
+      - name: 编译sdk
+        uses: actions/checkout@v4
+        id: build
+		working-directory: /builder
+        if: ${{ steps.clone.outputs.status }} == 'success' && !cancelled()
+        run: |
+          cd mv200
+          source ./env.sh
+          make hiboot
+          make linux -j4 2>&1  | tee -a buildlog.txt
+		  mkdir /builder/kmod
+		  mkdir /builder/out
+          cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/fastboot.bin /builder/out/fastboot_${{inputs.chip}}.bin
+		  cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel.bin
+          cd /builder/mv200/out/hi3798mv200/${{inputs.chip}}/obj/source/kernel/linux-4.4.y
+          cp modules.order 123.txt
+          sed -i "s/kernel\///" 123.txt
+          cp --parents $(cat 123.txt) /builder/kmod/
+          tar -zcvf /builder/out/hi3798mv200_kmod.tar.gz /builder/kmod/*
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: 上传编译结果
+        id: tar
+        uses: ncipollo/release-action@main
+        if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: mv200_kernel
+          artifacts: /builder/out
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - 海思3798mv200内核，hi_kernel.bin：32位内核，hi3798mv200_kmod.tar.gz：32位内核模块。
+
+  build-arm64:
+    if: ${{inputs.arch == arm64}}
+    name: 编译(64位)
+    runs-on: ubuntu-22.04
+    steps:
+      - name: 安装编译依赖和环境
+        id: init
+        run: |
+          sudo -E apt-get -y update
+          sudo -E apt-get -y install gcc make gettext bison flex bc zlib1g-dev libncurses5-dev lzma git
+          sudo mkdir -p /builder
+          sudo chown -R runner.runner /builder
+          echo "status=success" >> ${GITHUB_OUTPUT}
+		  
+      - name: 克隆sdk
+        uses: actions/checkout@v4
+        id: clone
+		working-directory: /builder
+        if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
+        run: |
+          git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
+          cd mv200
+          cp configs/hi3798mv200/${{inputs.chip}}_hi3798mv200-${{inputs.arch}}.mak ./cfg.mak
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig-64 mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
+		  echo "status=success" >> ${GITHUB_OUTPUT}
+	
+      - name: 编译sdk
+        uses: actions/checkout@v4
+        id: build
+		working-directory: /builder
+        if: ${{ steps.clone.outputs.status }} == 'success' && !cancelled()
+        run: |
+          cd mv2000
+          source ./env.sh
+          make hiboot
+          make linux -j4 2>&1  | tee -a buildlog.txt
+		  mkdir /builder/kmod
+		  mkdir /builder/out
+          cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/fastboot.bin /builder/out/fastboot_${{inputs.chip}}.bin
+		  cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel_arm64.bin
+          cd /builder/mv200/out/hi3798mv200/${{inputs.chip}}/obj64/source/kernel/linux-4.4.y
+          cp modules.order 123.txt
+          sed -i "s/kernel\///" 123.txt
+          cp --parents $(cat 123.txt) /builder/kmod/
+          tar -zcvf /builder/out/hi3798mv200_kmod-arm64.tar.gz /builder/kmod/*
+          echo "status=success" >> ${GITHUB_OUTPUT}
+
+      - name: 上传编译结果
+        id: tar
+        uses: ncipollo/release-action@main
+        if: ${{ steps.build.outputs.status }} == 'success' && !cancelled()
+        with:
+          tag: mv200_kernel
+          artifacts: /builder/out
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            - 海思3798mv200内核，hi_kernel.bin：32位内核，hi3798mv200_kmod.tar.gz：32位内核模块。
