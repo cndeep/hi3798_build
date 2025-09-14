@@ -31,6 +31,7 @@ jobs:
           #cp configs/hi3798mv310/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv31dmg_hi3798mv310_cfg.mak ./cfg.mak
           sed -i "s/'CFG_HI_TOOL_MSP_DEBUG_SUPPORT=y'/'# CFG_HI_TOOL_MSP_DEBUG_SUPPORT is not set'/" ./cfg.mak
+          cp -f ${GITHUB_WORKSPACE}/config_files/mv310Makefile source/msp/drv/Makefile
           source ./env.sh
           #make hiboot
           #ls -R /builder/mv310/out
