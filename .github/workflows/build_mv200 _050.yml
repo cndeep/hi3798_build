@@ -24,7 +24,6 @@ on:
           - hi3798mv2dmf
           - hi3798mv2dmg
           - hi3798mv2dmo
-		  
 jobs:
   build-arm:
     if: ${{inputs.arch == arm}}
