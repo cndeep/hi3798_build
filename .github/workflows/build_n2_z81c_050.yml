@@ -5,32 +5,19 @@ on:
   workflow_dispatch:
     inputs:
       arch:
-        description: 'Select arch type'
+        description: 'Select box type'
         type: choice
         required: true
-        default: 'arm64'
+        default: 'z81c'
         options:
-          - arm
-          - arm64
-      chip:
-        description: 'Select Chip Type'
-        type: choice
-        required: true
-        default: "hi3798mv2dmf"
-        options:
-          - hi3798mv2dma
-          - hi3798mv2dmb
-          - hi3798mv2dmc
-          - hi3798mv2dme
-          - hi3798mv2dmf
-          - hi3798mv2dmg
-          - hi3798mv2dmo
+          - z81c
+          - n2
 		  
 jobs:
-  build-arm:
-    if: ${{inputs.arch == arm}}
+  build-z81c:
+    if: ${{inputs.arch == z81c}}
     runs-on: ubuntu-22.04
-    name: 编译(32位)
+    name: 编译z81c
     steps:
       - name: 安装编译依赖和环境
         id: init
@@ -49,9 +36,9 @@ jobs:
         run: |
           git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
           cd mv200
-          cp configs/hi3798mv200/${{inputs.chip}}_hi3798mv200_cfg.mak ./cfg.mak
-          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig mv200/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv200_defconfig
-          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200         
+          cp configs/hi3798mv200/hi3798mv2dmf_hi3798mv200-64.mak ./cfg.mak
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig-64 mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200    
 		  echo "status=success" >> ${GITHUB_OUTPUT}
 	
       - name: 编译sdk
@@ -66,13 +53,13 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
 		  mkdir /builder/kmod
 		  mkdir /builder/out
-          cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/fastboot.bin /builder/out/fastboot_${{inputs.chip}}.bin
-		  cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel.bin
-          cd /builder/mv200/out/hi3798mv200/${{inputs.chip}}/obj/source/kernel/linux-4.4.y
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/fastboot.bin /builder/out/fastboot_z81c.bin
+		  cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-z81c.bin
+          cd /builder/mv200/out/hi3798mv200/hi3798mv2dmf/obj/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
           cp --parents $(cat 123.txt) /builder/kmod/
-          tar -zcvf /builder/out/hi3798mv200_kmod.tar.gz /builder/kmod/*
+          tar -zcvf /builder/out/z81c_kmod.tar.gz /builder/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: 上传编译结果
@@ -85,10 +72,10 @@ jobs:
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            - 海思3798mv200内核，hi_kernel.bin：32位内核，hi3798mv200_kmod.tar.gz：32位内核模块。
+            - 海思3798mv200内核，适用于Z81c。
 
-  build-arm64:
-    if: ${{inputs.arch == arm64}}
+  build-n2:
+    if: ${{inputs.arch == n2}}
     name: 编译(64位)
     runs-on: ubuntu-22.04
     steps:
@@ -109,9 +96,9 @@ jobs:
         run: |
           git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
           cd mv200
-          cp configs/hi3798mv200/${{inputs.chip}}_hi3798mv200-64.mak ./cfg.mak
-          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig-64 mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
-          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200
+          cp ${GITHUB_WORKSPACE}/configs/hi3798mv200/hi3798mv2dmc_n2_cfg.mak ./cfg.mak
+          cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_n2_defconfig mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
+          cp ${GITHUB_WORKSPACE}/config_files/config_files/hi3798mv2dmc_hi3798mv200_DDR4-2133_2GB_16bitx2_4layers_n2ns1_wtt.reg mv200/source/boot/sysreg/hi3798mv200
 		  echo "status=success" >> ${GITHUB_OUTPUT}
 	
       - name: 编译sdk
@@ -126,13 +113,13 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
 		  mkdir /builder/kmod
 		  mkdir /builder/out
-          cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/fastboot.bin /builder/out/fastboot_${{inputs.chip}}.bin
-		  cp /builder/mv200/out/hi3798mv200/${{inputs.chip}}/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel_arm64.bin
-          cd /builder/mv200/out/hi3798mv200/${{inputs.chip}}/obj64/source/kernel/linux-4.4.y
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/fastboot.bin /builder/out/fastboot_n2.bin
+		  cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel_n2.bin
+          cd /builder/mv200/out/hi3798mv200/hi3798mv2dmc/obj64/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
           cp --parents $(cat 123.txt) /builder/kmod/
-          tar -zcvf /builder/out/hi3798mv200_kmod-arm64.tar.gz /builder/kmod/*
+          tar -zcvf /builder/out/n2_kmod.tar.gz /builder/kmod/*
           echo "status=success" >> ${GITHUB_OUTPUT}
 
       - name: 上传编译结果
@@ -145,4 +132,4 @@ jobs:
           allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            - 海思3798mv200内核，hi_kernel.bin：32位内核，hi3798mv200_kmod.tar.gz：32位内核模块。
+            - 海思3798mv200内核，适用于N2。
