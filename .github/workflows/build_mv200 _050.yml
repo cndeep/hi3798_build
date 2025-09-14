@@ -38,7 +38,7 @@ jobs:
           sudo mkdir -p /builder
           sudo chown -R runner.runner /builder
           echo "status=success" >> ${GITHUB_OUTPUT}
-		  
+
       - name: 克隆sdk
         uses: actions/checkout@v4
         id: clone
@@ -50,7 +50,7 @@ jobs:
           cp configs/hi3798mv200/${{inputs.chip}}_hi3798mv200_cfg.mak ./cfg.mak
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig mv200/source/kernel/linux-4.4.y/arch/arm/configs/hi3798mv200_defconfig
 		  echo "status=success" >> ${GITHUB_OUTPUT}
-	
+
       - name: 编译sdk
         uses: actions/checkout@v4
         id: build
@@ -97,7 +97,7 @@ jobs:
           sudo mkdir -p /builder
           sudo chown -R runner.runner /builder
           echo "status=success" >> ${GITHUB_OUTPUT}
-		  
+
       - name: 克隆sdk
         uses: actions/checkout@v4
         id: clone
@@ -109,7 +109,7 @@ jobs:
           cp configs/hi3798mv200/${{inputs.chip}}_hi3798mv200-${{inputs.arch}}.mak ./cfg.mak
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig-64 mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
 		  echo "status=success" >> ${GITHUB_OUTPUT}
-	
+
       - name: 编译sdk
         uses: actions/checkout@v4
         id: build
