@@ -25,7 +25,7 @@ jobs:
           sudo mkdir -p /builder
           sudo chown -R runner.runner /builder
           echo "status=success" >> ${GITHUB_OUTPUT}
-		  
+
       - name: 克隆sdk
         uses: actions/checkout@v4
         id: clone
@@ -38,7 +38,7 @@ jobs:
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig-64 mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200    
 		  echo "status=success" >> ${GITHUB_OUTPUT}
-	
+
       - name: 编译sdk
         uses: actions/checkout@v4
         id: build
@@ -85,7 +85,7 @@ jobs:
           sudo mkdir -p /builder
           sudo chown -R runner.runner /builder
           echo "status=success" >> ${GITHUB_OUTPUT}
-		  
+
       - name: 克隆sdk
         uses: actions/checkout@v4
         id: clone
@@ -98,7 +98,7 @@ jobs:
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_n2_defconfig mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
           cp ${GITHUB_WORKSPACE}/config_files/config_files/hi3798mv2dmc_hi3798mv200_DDR4-2133_2GB_16bitx2_4layers_n2ns1_wtt.reg mv200/source/boot/sysreg/hi3798mv200
 		  echo "status=success" >> ${GITHUB_OUTPUT}
-	
+
       - name: 编译sdk
         uses: actions/checkout@v4
         id: build
