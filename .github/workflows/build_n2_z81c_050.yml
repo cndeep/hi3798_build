@@ -37,7 +37,7 @@ jobs:
         run: |
           git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
           cd mv200
-          cp configs/hi3798mv200/hi3798mv2dmf_hi3798mv200-64.mak ./cfg.mak
+          cp ${GITHUB_WORKSPACE}/configs/hi3798mv2dmf_hi3798mv200-64.mak ./cfg.mak
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_defconfig-64 mv200/source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_defconfig
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmf_hi3798mv200_DDR3-1866_2GB_8bitx4_4layers.reg mv200/source/boot/sysreg/hi3798mv200    
           echo "status=success" >> ${GITHUB_OUTPUT}
