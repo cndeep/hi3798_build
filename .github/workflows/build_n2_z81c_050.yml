@@ -55,7 +55,7 @@ jobs:
           mkdir /builder/out
           cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/fastboot.bin /builder/out/fastboot_z81c.bin
           cp /builder/mv200/out/hi3798mv200/hi3798mv2dmf/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-z81c.bin
-          cd /builder/mv200/out/hi3798mv200/hi3798mv2dmf/obj/source/kernel/linux-4.4.y
+          cd /builder/mv200/out/hi3798mv200/hi3798mv2dmf/obj64/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
           cp --parents $(cat 123.txt) /builder/kmod/
@@ -108,7 +108,7 @@ jobs:
         working-directory: /builder
         if: ${{ steps.clone.outputs.status }} == 'success' && !cancelled()
         run: |
-          cd mv2000
+          cd mv200
           source ./env.sh
           make hiboot
           make linux -j4 2>&1  | tee -a buildlog.txt
