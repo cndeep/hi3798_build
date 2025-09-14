@@ -153,9 +153,9 @@ else
         objects += aenc
     endif
 
-    ifeq ($(CFG_HI_VENC_SUPPORT),y)
-        objects += venc
-    endif
+#    ifeq ($(CFG_HI_VENC_SUPPORT),y)
+#        objects += venc
+#    endif
 
     ifeq ($(CFG_HI_CI_SUPPORT),y)
         objects += ci
