@@ -82,7 +82,7 @@ else ifeq ($(CFG_HI_RECOVERY_SUPPORT),y)
     endif
 else
 #   objects := gpio ir i2c pm pdm pq hdmi vo hifb tde jpeg cipher otp ddr sync adsp aiao adec vfmw vdec vpss mce omxvdec
-	objects := gpio ir i2c pm pdm pq hdmi vo hifb tde jpeg cipher otp ddr
+	objects := gpio ir i2c pm pdm hdmi vo hifb tde jpeg cipher otp ddr
     ifeq ($(CFG_HI_LOAD_CAS_IMAGE),y)
         objects += cas_image_load
     endif
