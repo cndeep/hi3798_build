@@ -11,7 +11,6 @@ on:
         options:
           - z81c
           - n2
-
 jobs:
   build-z81c:
     if: ${{inputs.arch == z81c}}
