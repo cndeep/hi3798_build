@@ -114,6 +114,7 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
           mkdir /builder/kmod
           mkdir /builder/out
+          ls -R /builder/mv200/out
           cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc_n2/image/emmc_image/fastboot.bin /builder/out/fastboot-n2.bin
           cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc_n2/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-n2.bin
           cd /builder/mv200/out/hi3798mv200/hi3798mv2dmc_n2/obj64/source/kernel/linux-4.4.y
