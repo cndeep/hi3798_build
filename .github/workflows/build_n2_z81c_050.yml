@@ -96,7 +96,7 @@ jobs:
         working-directory: /builder
         if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
         run: |
-          git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC050 mv200
+          git clone -q --single-branch --depth=1 https://github.com/JasonFreeLab/HiSTBLinuxV100R005C00SPC060 mv200
           cd mv200
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv2dmc_n2_cfg.mak ./cfg.mak
           cp ${GITHUB_WORKSPACE}/config_files/hi3798mv200_n2_defconfig source/kernel/linux-4.4.y/arch/arm64/configs/hi3798mv200_n2_defconfig
