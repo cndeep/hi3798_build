@@ -26,6 +26,7 @@ jobs:
         run: |
           git clone -q --single-branch --depth=1 https://github.com/loonpn/ec6108v9c-linux-kernel mv100
           cd mv100
+          \cp -f ${GITHUB_WORKSPACE}/config_files/hi3798mv100-v6.dts arch/arm/boot/dts/hi3798mv100-ec6108v9c.dts
           make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- hi3798mv100_defconfig
           make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j$(nproc)
           cat arch/arm/boot/Image arch/arm/boot/dts/hi3798mv100-ec6108v9c.dtb > zImage-dtb
