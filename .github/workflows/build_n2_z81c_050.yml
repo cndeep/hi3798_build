@@ -114,9 +114,9 @@ jobs:
           make linux -j4 2>&1  | tee -a buildlog.txt
           mkdir /builder/kmod
           mkdir /builder/out
-          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/fastboot.bin /builder/out/fastboot-n2.bin
-          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-n2.bin
-          cd /builder/mv200/out/hi3798mv200/hi3798mv2dmc/obj64/source/kernel/linux-4.4.y
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc_n2/image/emmc_image/fastboot.bin /builder/out/fastboot-n2.bin
+          cp /builder/mv200/out/hi3798mv200/hi3798mv2dmc_n2/image/emmc_image/hi_kernel.bin /builder/out/hi_kernel-n2.bin
+          cd /builder/mv200/out/hi3798mv200/hi3798mv2dmc_n2/obj64/source/kernel/linux-4.4.y
           cp modules.order 123.txt
           sed -i "s/kernel\///" 123.txt
           cp --parents $(cat 123.txt) /builder/kmod/
