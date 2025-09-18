@@ -4,7 +4,7 @@
 #include "hi3798mv100.dtsi"
 
 / {
-	model = "Hisilicon 3798Mv100";
+	model = "Hisilicon Hi3798MV100";
 
 	chosen {
 		stdout-path = "serial0:115200n8";
